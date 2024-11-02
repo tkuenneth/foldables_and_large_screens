@@ -8,3 +8,4 @@ misc.xml
 inspectionProfiles/Project_Default.xml
 emulatorDisplays.xml
 gradle.xml
+kotlinc.xml
