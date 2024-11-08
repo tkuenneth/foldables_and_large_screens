@@ -11,7 +11,7 @@ class MaterialAdaptiveDemoActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MaterialTheme {
+            MaterialTheme(colorScheme = defaultColorScheme()) {
                 MaterialAdaptiveDemo()
             }
         }
