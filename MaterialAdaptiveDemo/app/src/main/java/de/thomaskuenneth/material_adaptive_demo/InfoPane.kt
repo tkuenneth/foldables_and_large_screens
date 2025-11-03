@@ -26,7 +26,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.window.core.layout.WindowWidthSizeClass
+import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
+import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_MEDIUM_LOWER_BOUND
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
@@ -35,10 +36,12 @@ fun InfoPane() {
     val scope = rememberCoroutineScope()
     val navigator = rememberSupportingPaneScaffoldNavigator(
         scaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()).copy(
-            maxHorizontalPartitions = when (currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass) {
-                WindowWidthSizeClass.MEDIUM -> 2
-                WindowWidthSizeClass.EXPANDED -> 3
-                else -> 1
+            maxHorizontalPartitions = with(currentWindowAdaptiveInfo().windowSizeClass) {
+                if (isWidthAtLeastBreakpoint(WIDTH_DP_EXPANDED_LOWER_BOUND))
+                    3
+                else if (isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND))
+                    2
+                else 1
             }
         )
     )
