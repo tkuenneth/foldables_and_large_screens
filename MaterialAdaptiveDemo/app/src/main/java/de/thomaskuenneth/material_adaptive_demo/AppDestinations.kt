@@ -8,9 +8,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 
 
 enum class AppDestinations(
-    @StringRes val labelRes: Int,
+    @param:StringRes val labelRes: Int,
     val icon: ImageVector,
-    @StringRes val contentDescription: Int = labelRes,
+    @param:StringRes val contentDescription: Int = labelRes,
 ) {
     Home(R.string.tab_home, Icons.Default.Home), Info(R.string.tab_info, Icons.Default.Info),
 }
