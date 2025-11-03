@@ -14,11 +14,12 @@ import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.PaneAdaptedValue
 import androidx.compose.material3.adaptive.layout.SupportingPaneScaffold
 import androidx.compose.material3.adaptive.layout.SupportingPaneScaffoldRole
-import androidx.compose.material3.adaptive.layout.ThreePaneScaffoldScope
+import androidx.compose.material3.adaptive.layout.ThreePaneScaffoldPaneScope
 import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
 import androidx.compose.material3.adaptive.navigation.ThreePaneScaffoldNavigator
 import androidx.compose.material3.adaptive.navigation.rememberSupportingPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,10 +27,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowWidthSizeClass
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun InfoPane() {
+    val scope = rememberCoroutineScope()
     val navigator = rememberSupportingPaneScaffoldNavigator(
         scaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfo()).copy(
             maxHorizontalPartitions = when (currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass) {
@@ -40,7 +43,7 @@ fun InfoPane() {
         )
     )
     BackHandler(navigator.canNavigateBack()) {
-        navigator.navigateBack()
+        scope.launch { navigator.navigateBack() }
     }
     SupportingPaneScaffold(
         directive = navigator.scaffoldDirective,
@@ -53,29 +56,33 @@ fun InfoPane() {
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-fun ThreePaneScaffoldScope.MainPane(navigator: ThreePaneScaffoldNavigator<Nothing>) {
-    ColoredBox(textColor = MaterialTheme.colorScheme.onPrimaryContainer,
+fun ThreePaneScaffoldPaneScope.MainPane(navigator: ThreePaneScaffoldNavigator<Any>) {
+    val scope = rememberCoroutineScope()
+    ColoredBox(
+        textColor = MaterialTheme.colorScheme.onPrimaryContainer,
         backgroundColor = MaterialTheme.colorScheme.primaryContainer,
         resIdMessage = R.string.main_pane,
         resIdButton = R.string.show_supporting_pane,
         shouldShowButton = navigator.scaffoldValue[SupportingPaneScaffoldRole.Supporting] == PaneAdaptedValue.Hidden,
-        onClick = { navigator.navigateTo(SupportingPaneScaffoldRole.Supporting) })
+        onClick = { scope.launch { navigator.navigateTo(SupportingPaneScaffoldRole.Supporting) } })
 }
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-fun ThreePaneScaffoldScope.SupportingPane(navigator: ThreePaneScaffoldNavigator<Nothing>) {
-    ColoredBox(textColor = MaterialTheme.colorScheme.onSecondaryContainer,
+fun ThreePaneScaffoldPaneScope.SupportingPane(navigator: ThreePaneScaffoldNavigator<Any>) {
+    val scope = rememberCoroutineScope()
+    ColoredBox(
+        textColor = MaterialTheme.colorScheme.onSecondaryContainer,
         backgroundColor = MaterialTheme.colorScheme.secondaryContainer,
         resIdMessage = R.string.supporting_pane,
         resIdButton = R.string.show_main_pane,
         shouldShowButton = navigator.scaffoldValue[SupportingPaneScaffoldRole.Main] == PaneAdaptedValue.Hidden,
-        onClick = { navigator.navigateTo(SupportingPaneScaffoldRole.Main) })
+        onClick = { scope.launch { navigator.navigateTo(SupportingPaneScaffoldRole.Main) } })
 }
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-fun ThreePaneScaffoldScope.ExtraPane() {
+fun ThreePaneScaffoldPaneScope.ExtraPane() {
     ColoredBox(
         textColor = MaterialTheme.colorScheme.onTertiaryContainer,
         backgroundColor = MaterialTheme.colorScheme.tertiaryContainer,
@@ -87,7 +94,7 @@ fun ThreePaneScaffoldScope.ExtraPane() {
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-private fun ThreePaneScaffoldScope.ColoredBox(
+private fun ThreePaneScaffoldPaneScope.ColoredBox(
     textColor: Color,
     backgroundColor: Color,
     shouldShowButton: Boolean,

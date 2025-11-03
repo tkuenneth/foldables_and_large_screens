@@ -21,21 +21,24 @@ import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.layout.PaneAdaptedValue
-import androidx.compose.material3.adaptive.layout.ThreePaneScaffoldScope
+import androidx.compose.material3.adaptive.layout.ThreePaneScaffoldPaneScope
 import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirectiveWithTwoPanesOnMediumWidth
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun HomePane() {
+    val scope = rememberCoroutineScope()
     val navigator = rememberListDetailPaneScaffoldNavigator<Int>(
         scaffoldDirective = calculatePaneScaffoldDirectiveWithTwoPanesOnMediumWidth(
             currentWindowAdaptiveInfo()
@@ -44,14 +47,18 @@ fun HomePane() {
     var currentIndex by rememberSaveable { mutableIntStateOf(-1) }
     val onItemClicked: (Int) -> Unit = { id ->
         currentIndex = id
-        navigator.navigateTo(
-            pane = ListDetailPaneScaffoldRole.Detail, content = id
-        )
+        scope.launch {
+            navigator.navigateTo(
+                pane = ListDetailPaneScaffoldRole.Detail, contentKey = id
+            )
+        }
     }
-    val detailVisible = navigator.scaffoldValue[ListDetailPaneScaffoldRole.Detail] == PaneAdaptedValue.Expanded
+    val detailVisible =
+        navigator.scaffoldValue[ListDetailPaneScaffoldRole.Detail] == PaneAdaptedValue.Expanded
     if (detailVisible && currentIndex == -1) currentIndex = 0
-    BackHandler(navigator.canNavigateBack()) { navigator.navigateBack() }
-    ListDetailPaneScaffold(directive = navigator.scaffoldDirective,
+    BackHandler(navigator.canNavigateBack()) { scope.launch { navigator.navigateBack() } }
+    ListDetailPaneScaffold(
+        directive = navigator.scaffoldDirective,
         value = navigator.scaffoldValue,
         listPane = {
             MyList(
@@ -61,15 +68,16 @@ fun HomePane() {
             )
         },
         detailPane = {
-            MyListDetail(currentIndex = currentIndex,
+            MyListDetail(
+                currentIndex = currentIndex,
                 listHidden = navigator.scaffoldValue[ListDetailPaneScaffoldRole.List] == PaneAdaptedValue.Hidden,
-                onBackClicked = { navigator.navigateBack() })
+                onBackClicked = { scope.launch { navigator.navigateBack() } })
         })
 }
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-fun ThreePaneScaffoldScope.MyList(
+fun ThreePaneScaffoldPaneScope.MyList(
     onItemClicked: (Int) -> Unit, currentIndex: Int, detailVisible: Boolean
 ) {
     AnimatedPane {
@@ -97,7 +105,7 @@ fun ThreePaneScaffoldScope.MyList(
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-fun ThreePaneScaffoldScope.MyListDetail(
+fun ThreePaneScaffoldPaneScope.MyListDetail(
     currentIndex: Int, listHidden: Boolean, onBackClicked: () -> Unit
 ) {
     AnimatedPane {
