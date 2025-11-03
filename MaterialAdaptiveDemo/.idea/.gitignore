@@ -9,3 +9,6 @@ inspectionProfiles/Project_Default.xml
 emulatorDisplays.xml
 gradle.xml
 kotlinc.xml
+deviceManager.xml
+AndroidProjectSystem.xml
+compiler.xml
