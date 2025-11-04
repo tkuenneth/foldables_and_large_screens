@@ -68,7 +68,7 @@ fun ThreePaneScaffoldPaneScope.SupportingPane(navigator: ThreePaneScaffoldNaviga
         resIdMessage = R.string.supporting_pane,
         resIdButton = R.string.show_main_pane,
         shouldShowButton = navigator.scaffoldValue[SupportingPaneScaffoldRole.Main] == PaneAdaptedValue.Hidden,
-        onClick = { scope.launch { navigator.navigateTo(SupportingPaneScaffoldRole.Main) } })
+        onClick = { scope.launch { navigator.navigateBack() } })
 }
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
