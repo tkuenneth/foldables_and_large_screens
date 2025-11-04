@@ -1,57 +1,91 @@
 package de.thomaskuenneth.material_adaptive_demo
 
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
-import androidx.compose.material3.adaptive.currentWindowSize
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
+import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MaterialAdaptiveDemo() {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.Home) }
     val adaptiveInfo = currentWindowAdaptiveInfo()
-    val density = LocalDensity.current
     val customNavSuiteType =
-        // if (adaptiveInfo.windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.EXPANDED) {
-        if (with(density) { currentWindowSize().width.toDp() >= 1200.dp }) {
+        if (adaptiveInfo.windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_EXPANDED_LOWER_BOUND)) {
             NavigationSuiteType.NavigationDrawer
         } else {
             NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(adaptiveInfo)
         }
-    NavigationSuiteScaffold(layoutType = customNavSuiteType, navigationSuiteItems = {
-        AppDestinations.entries.forEach {
-            item(
-                selected = it == currentDestination,
-                onClick = { currentDestination = it },
-                icon = {
-                    Icon(
-                        imageVector = it.icon,
-                        contentDescription = stringResource(it.contentDescription)
+    val navigationState = remember { NavigationState() }
+    Scaffold(
+        contentWindowInsets = WindowInsets(),
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.app_name)) },
+                navigationIcon = {
+                    if (navigationState.canNavigateBack) {
+                        IconButton(
+                            onClick = {
+                                navigationState.navigateBack()
+                            }
+                        ) {
+                            Icon(
+                                Icons.AutoMirrored.Outlined.ArrowBack,
+                                contentDescription = stringResource(R.string.back)
+                            )
+                        }
+                    }
+                })
+        }) { paddingValues ->
+        NavigationSuiteScaffold(
+            modifier = Modifier.padding(paddingValues),
+            layoutType = customNavSuiteType,
+            navigationSuiteItems = {
+                AppDestinations.entries.forEach {
+                    item(
+                        selected = it == currentDestination,
+                        onClick = { currentDestination = it },
+                        icon = {
+                            Icon(
+                                imageVector = it.icon,
+                                contentDescription = stringResource(it.contentDescription)
+                            )
+                        },
+                        label = {
+                            Text(
+                                text = stringResource(it.labelRes)
+                            )
+                        },
                     )
-                },
-                label = {
-                    Text(text = stringResource(it.labelRes))
-                },
-            )
-        }
-    }) {
-        when (currentDestination) {
-            AppDestinations.Home -> {
-                HomePane()
-            }
+                }
+            }) {
+            when (currentDestination) {
+                AppDestinations.Home -> {
+                    HomePane(navigationState)
+                }
 
-            AppDestinations.Info -> {
-                InfoPane()
+                AppDestinations.Info -> {
+                    InfoPane(navigationState)
+                }
             }
         }
     }

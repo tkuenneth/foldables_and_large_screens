@@ -1,16 +1,10 @@
 package de.thomaskuenneth.material_adaptive_demo
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -37,8 +31,8 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-fun HomePane() {
-    val scope = rememberCoroutineScope()
+fun HomePane(navigationState: NavigationState) {
+    val coroutineScope = rememberCoroutineScope()
     val navigator = rememberListDetailPaneScaffoldNavigator<Int>(
         scaffoldDirective = calculatePaneScaffoldDirectiveWithTwoPanesOnMediumWidth(
             currentWindowAdaptiveInfo()
@@ -47,7 +41,7 @@ fun HomePane() {
     var currentIndex by rememberSaveable { mutableIntStateOf(-1) }
     val onItemClicked: (Int) -> Unit = { id ->
         currentIndex = id
-        scope.launch {
+        coroutineScope.launch {
             navigator.navigateTo(
                 pane = ListDetailPaneScaffoldRole.Detail, contentKey = id
             )
@@ -56,7 +50,11 @@ fun HomePane() {
     val detailVisible =
         navigator.scaffoldValue[ListDetailPaneScaffoldRole.Detail] == PaneAdaptedValue.Expanded
     if (detailVisible && currentIndex == -1) currentIndex = 0
-    BackHandler(navigator.canNavigateBack()) { scope.launch { navigator.navigateBack() } }
+    NavigationHelper(
+        navigator = navigator,
+        navigationState = navigationState,
+        coroutineScope = coroutineScope
+    )
     ListDetailPaneScaffold(
         directive = navigator.scaffoldDirective,
         value = navigator.scaffoldValue,
@@ -70,8 +68,8 @@ fun HomePane() {
         detailPane = {
             MyListDetail(
                 currentIndex = currentIndex,
-                listHidden = navigator.scaffoldValue[ListDetailPaneScaffoldRole.List] == PaneAdaptedValue.Hidden,
-                onBackClicked = { scope.launch { navigator.navigateBack() } })
+                listHidden = navigator.scaffoldValue[ListDetailPaneScaffoldRole.List] == PaneAdaptedValue.Hidden
+            )
         })
 }
 
@@ -81,7 +79,7 @@ fun ThreePaneScaffoldPaneScope.MyList(
     onItemClicked: (Int) -> Unit, currentIndex: Int, detailVisible: Boolean
 ) {
     AnimatedPane {
-        LazyColumn(modifier = Modifier.safeDrawingPadding()) {
+        LazyColumn {
             items(20) {
                 ListItem(
                     headlineContent = { Text("${it + 1}") },
@@ -106,11 +104,12 @@ fun ThreePaneScaffoldPaneScope.MyList(
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun ThreePaneScaffoldPaneScope.MyListDetail(
-    currentIndex: Int, listHidden: Boolean, onBackClicked: () -> Unit
+    currentIndex: Int, listHidden: Boolean
 ) {
     AnimatedPane {
-        Box(
-            contentAlignment = Alignment.Center,
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
             modifier = Modifier.background(MaterialTheme.colorScheme.secondaryContainer)
         ) {
             Text(
@@ -119,17 +118,11 @@ fun ThreePaneScaffoldPaneScope.MyListDetail(
                 color = MaterialTheme.colorScheme.onSecondaryContainer
             )
             if (listHidden) {
-                IconButton(
-                    onClick = onBackClicked,
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .safeContentPadding()
-                ) {
-                    Icon(
-                        Icons.AutoMirrored.Outlined.ArrowBack,
-                        contentDescription = stringResource(R.string.back)
-                    )
-                }
+                Text(
+                    text = stringResource(R.string.list_hidden),
+                    style = MaterialTheme.typography.displaySmall,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                )
             }
         }
     }

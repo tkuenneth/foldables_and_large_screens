@@ -8,4 +8,5 @@
     <string name="supporting_pane">Supporting pane</string>
     <string name="show_supporting_pane">Show supporting pane</string>
     <string name="show_main_pane">Show main pane</string>
+    <string name="list_hidden">List is hidden</string>
 </resources>
