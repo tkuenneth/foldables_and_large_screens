@@ -1,7 +1,7 @@
 package de.thomaskuenneth.material.adaptive.multiplatform
 
-class JVMPlatform: Platform {
-    override val name: String = "Java ${System.getProperty("java.version")}"
-}
+import androidx.compose.runtime.Composable
 
-actual fun getPlatform(): Platform = JVMPlatform()
+@Composable
+actual fun BackHandler(enabled: Boolean, onBack: () -> Unit) {
+}

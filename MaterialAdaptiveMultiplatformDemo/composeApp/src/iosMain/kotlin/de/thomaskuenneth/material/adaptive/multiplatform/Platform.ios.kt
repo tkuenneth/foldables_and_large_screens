@@ -1,9 +1,7 @@
 package de.thomaskuenneth.material.adaptive.multiplatform
 
-import platform.UIKit.UIDevice
+import androidx.compose.runtime.Composable
 
-class IOSPlatform: Platform {
-    override val name: String = UIDevice.currentDevice.systemName() + " " + UIDevice.currentDevice.systemVersion
+@Composable
+actual fun BackHandler(enabled: Boolean, onBack: () -> Unit) {
 }
-
-actual fun getPlatform(): Platform = IOSPlatform()

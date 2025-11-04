@@ -1,7 +1,6 @@
 package de.thomaskuenneth.material.adaptive.multiplatform
 
-interface Platform {
-    val name: String
-}
+import androidx.compose.runtime.Composable
 
-expect fun getPlatform(): Platform
+@Composable
+expect fun BackHandler(enabled: Boolean = true, onBack: () -> Unit)

@@ -26,5 +26,5 @@ fun <T> NavigationHelper(
             navigationState.clear()
         }
     }
-    // BackHandler(navigator.canNavigateBack()) { coroutineScope.launch { navigator.navigateBack() } }
+    BackHandler(navigator.canNavigateBack()) { coroutineScope.launch { navigator.navigateBack() } }
 }
