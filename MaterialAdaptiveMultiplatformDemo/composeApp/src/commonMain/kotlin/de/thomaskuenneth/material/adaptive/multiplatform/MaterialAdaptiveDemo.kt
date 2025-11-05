@@ -22,7 +22,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
-import androidx.window.core.layout.WindowWidthSizeClass
 import materialadaptivemultiplatformdemo.composeapp.generated.resources.Res
 import materialadaptivemultiplatformdemo.composeapp.generated.resources.app_name
 import materialadaptivemultiplatformdemo.composeapp.generated.resources.back
