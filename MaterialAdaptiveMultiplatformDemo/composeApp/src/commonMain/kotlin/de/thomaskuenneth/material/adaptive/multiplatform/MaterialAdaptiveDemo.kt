@@ -1,5 +1,6 @@
 package de.thomaskuenneth.material.adaptive.multiplatform
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -7,6 +8,7 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -14,6 +16,8 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,9 +31,16 @@ import materialadaptivemultiplatformdemo.composeapp.generated.resources.app_name
 import materialadaptivemultiplatformdemo.composeapp.generated.resources.back
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MaterialAdaptiveDemo() {
+    MaterialTheme(colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()) {
+        MaterialAdaptiveDemoScaffold()
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MaterialAdaptiveDemoScaffold() {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.Home) }
     val adaptiveInfo = currentWindowAdaptiveInfo()
     val customNavSuiteType =
