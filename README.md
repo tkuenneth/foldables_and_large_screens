@@ -10,4 +10,4 @@ These projects implement the same functionality; the first one is Android-only, 
 
 The `slides` folder contains PDF versions of slides from some of my talks about foldables and large screens.
 
-- [DevFest Hamburg, Nov 15, 2025](https://github.com/tkuenneth/foldables_and_large_screens/blob/main/slides/Foldables%20on%20Android%20–%20What's%20new.pdf)
+- [DevFest Hamburg, Nov 15, 2025](https://github.com/tkuenneth/foldables_and_large_screens/blob/main/slides/Building%20Responsive%20User%20Interfaces%20with%20Compose%20Multiplatform.pdf)
